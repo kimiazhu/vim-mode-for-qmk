@@ -12,9 +12,9 @@
 # 刷入固件
 
 - 拔掉 USB 线，按住 ESC 并重新插入 USB 线缆
-- Windows 下直接拷贝进刷出来的盘符中，mac 执行以下指令,* 注意替换为自己的分区 *：
+- Windows 下直接拷贝进刷出来的盘符中，mac 执行以下指令,*注意替换为自己的分区*：
 ```
 $ mount /Volumes/HHKB_BLE
-sudo dd if=/Users/kc/Development/keyboard/vial-qmk-v5/ydkb_hhkb_ble_vial.bin of=/dev/disk8 seek=4
+$ sudo dd if=/Users/kc/Development/keyboard/vial-qmk-v5/ydkb_hhkb_ble_vial.bin of=/dev/disk8 seek=4
 ```
 
