@@ -72,8 +72,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     static bool is_combination_active = false;
 
     // 检查是否是修饰键
-    if (IS_MODIFIER_KEYCODE(keycode)) {
-    // if (keycode >= KC_LCTL && keycode <= KC_RGUI) {
+    // if (IS_MODIFIER_KEYCODE(keycode)) {
+    if (keycode >= KC_LCTL && keycode <= KC_RGUI) {
         if (record->event.pressed) {
             held_mods |= MOD_BIT(keycode); // 记录按下的修饰键
         } else {
