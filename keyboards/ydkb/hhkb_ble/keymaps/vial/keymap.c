@@ -94,9 +94,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 HANDLE_DOWN_BOTH(KC_ESC, MOD_BIT(KC_LALT), KC_GRV, MOD_BIT(KC_LALT))
                 HANDLE_DOWN_BOTH(KC_U, MOD_BIT(KC_LALT), KC_PGUP, MODS_NULL)
                 HANDLE_DOWN_BOTH(KC_D, MOD_BIT(KC_LALT), KC_PGDN, MODS_NULL)
+                HANDLE_DOWN_BOTH(KC_J, MOD_BIT(KC_LALT), KC_PGUP, MODS_NULL)
+                HANDLE_DOWN_BOTH(KC_K, MOD_BIT(KC_LALT), KC_PGDN, MODS_NULL)
+                HANDLE_DOWN_BOTH(KC_D, MOD_BIT(KC_LCTL), KC_DEL, MODS_NULL)
                 HANDLE_DOWN_MAC(KC_R, MOD_BIT(KC_LCTL), KC_R, MOD_BIT(KC_LGUI)) // reload browser
                 HANDLE_DOWN_WIN(KC_A, MOD_BIT(KC_LCTL), KC_HOME, MODS_NULL)
                 HANDLE_DOWN_WIN(KC_A, MOD_BIT(KC_LGUI), KC_A, MOD_BIT(KC_LCTL)) // win+A -> 全选
+                HANDLE_DOWN_WIN(KC_Q, MOD_BIT(KC_LGUI), KC_F4, MOD_BIT(KC_LALT)) // win+Q -> 关闭窗口
+                HANDLE_DOWN_WIN(KC_N, MOD_BIT(KC_LCTL), KC_F2, MODS_NULL) // ctrl+n -> rename
+                HANDLE_DOWN_WIN(KC_C, MOD_BIT(KC_LGUI), KC_C, MOD_BIT(KC_LCTL)) // win+c -> copy
+                HANDLE_DOWN_WIN(KC_V, MOD_BIT(KC_LGUI), KC_V, MOD_BIT(KC_LCTL)) // win+v -> paste
                 else {
                     register_mods(held_mods);
                     register_code(keycode);
@@ -123,9 +130,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 HANDLE_UP_BOTH(KC_ESC, MOD_BIT(KC_LALT), KC_GRV, MOD_BIT(KC_LALT))
                 HANDLE_UP_BOTH(KC_U, MOD_BIT(KC_LALT), KC_PGUP, MODS_NULL)
                 HANDLE_UP_BOTH(KC_D, MOD_BIT(KC_LALT), KC_PGDN, MODS_NULL)
+                HANDLE_UP_BOTH(KC_J, MOD_BIT(KC_LALT), KC_PGUP, MODS_NULL)
+                HANDLE_UP_BOTH(KC_K, MOD_BIT(KC_LALT), KC_PGDN, MODS_NULL)
+                HANDLE_UP_BOTH(KC_D, MOD_BIT(KC_LCTL), KC_DEL, MODS_NULL)
                 HANDLE_UP_MAC(KC_R, MOD_BIT(KC_LCTL), KC_R, MOD_BIT(KC_LGUI))
                 HANDLE_UP_WIN(KC_A, MOD_BIT(KC_LCTL), KC_HOME, MODS_NULL)
                 HANDLE_UP_WIN(KC_A, MOD_BIT(KC_LGUI), KC_A, MOD_BIT(KC_LCTL)) // win+A -> 全选
+                HANDLE_UP_WIN(KC_Q, MOD_BIT(KC_LGUI), KC_F4, MOD_BIT(KC_LALT)) // win+Q -> 关闭窗口
+                HANDLE_UP_WIN(KC_N, MOD_BIT(KC_LCTL), KC_F2, MODS_NULL) // ctrl+n -> rename
+                HANDLE_UP_WIN(KC_C, MOD_BIT(KC_LGUI), KC_C, MOD_BIT(KC_LCTL)) // win+c -> copy
+                HANDLE_UP_WIN(KC_V, MOD_BIT(KC_LGUI), KC_V, MOD_BIT(KC_LCTL)) // win+v -> paste
                 else {
                     unregister_code(keycode);
                     // 这里之所以清除所有，是为了确保不会因为按键释放顺序导致错误，如果是用比如:
