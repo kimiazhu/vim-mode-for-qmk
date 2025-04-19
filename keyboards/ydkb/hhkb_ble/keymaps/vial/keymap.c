@@ -1,4 +1,5 @@
 #include QMK_KEYBOARD_H
+#include "./helper.h"
 
 #if 0
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {LAYOUT_all(KC_NO)};
@@ -29,59 +30,109 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] =
     },
 };
 
+static uint8_t saved_mods;
+static bool is_direction_down = false;
+static bool is_active = false; // 标记一组快捷键生效，用于按键释放的时候触发 unregister_code
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    if (keycode == KC_H && (get_mods() & MOD_MASK_CTRL)) {
-        if (record->event.pressed) {
-            // unregister_code(KC_LEFT_CTRL);
-            // tap_code(KC_LEFT);
-            // register_code(KC_LEFT_CTRL);
+    static uint8_t held_mods = 0;
+    // 用来标记是否有组合键被激活，如果仅仅是修饰键被按下并释放，这时候应该直接发送给系统，
+    // 比如 GUI 键单独按下释放用于激活系统菜单，SHIFT 单独按下释放用于切换输入法
+    static bool is_combination_active = false;
+    static int curr_layer = 0;
 
-            // uint8_t mods = get_mods();  // 保存当前修饰键状态
-            // del_mods(MOD_MASK_CTRL);    // 临时清除Ctrl
-            // tap_code(KC_LEFT);          // 发送纯净的LEFT
-            // set_mods(mods);             // 恢复原修饰键状态
+    // 检查是否是修饰键
+    if (keycode >= KC_LCTL && keycode <= KC_RGUI) {
+        if (record->event.pressed) {
+            held_mods |= MOD_BIT(keycode);
+        } else {
+            held_mods &= ~MOD_BIT(keycode);
 
-            uint8_t mods = get_mods();  // 保存当前修饰键状态
-            del_mods(MOD_MASK_CTRL);    // 临时清除Ctrl
-            register_code(KC_LEFT);
-            set_mods(mods);             // 恢复原修饰键状态
-        } else {
-            unregister_code(KC_LEFT);
+            if (!is_combination_active) {
+                if (keycode == KC_RALT) {
+                    // RALT 作为一个特殊键，长按加数字用于激活指定层，短按时用于清除所有修饰键和层信息
+                    unregister_mods(MOD_MASK_CSAG);
+                    clear_mods();
+                    layer_clear();
+                    curr_layer = 0;
+                    held_mods = 0;
+                } else {
+                    tap_code(keycode);
+                }
+            }
+
+            if (!held_mods) {
+                // 所有的 mods 组合键都释放了
+                is_combination_active = false;
+            }
         }
         return false;
-    } else if (keycode == KC_J && (get_mods() & MOD_MASK_CTRL)) {
-        if (record->event.pressed) {
-            uint8_t mods = get_mods();  // 保存当前修饰键状态
-            del_mods(MOD_MASK_CTRL);    // 临时清除Ctrl
-            register_code(KC_DOWN);
-            set_mods(mods);             // 恢复原修饰键状态
+    } else {
+        if (record->event.pressed && held_mods) {
+            is_combination_active = true;
+            // 在下面定义自己的组合键，2 层是 windows，3 层是 macOS
+            if (0) {}
+            MOVE_to_LAYER(1)
+            MOVE_to_LAYER(2)
+            MOVE_to_LAYER(3)
+            else {
+                if (0) {} // 初始条件，仅为语法占位
+                HANDLE_DOWN_BOTH(KC_H, MOD_BIT(KC_LCTL), KC_LEFT, MODS_NULL)
+                HANDLE_DOWN_BOTH(KC_J, MOD_BIT(KC_LCTL), KC_DOWN, MODS_NULL)
+                HANDLE_DOWN_BOTH(KC_K, MOD_BIT(KC_LCTL), KC_UP, MODS_NULL)
+                HANDLE_DOWN_BOTH(KC_L, MOD_BIT(KC_LCTL), KC_RIGHT, MODS_NULL)
+                HANDLE_DOWN_BOTH(KC_ESC, MOD_BIT(KC_LSFT), KC_GRV, MOD_BIT(KC_LSFT))
+                HANDLE_DOWN_BOTH(KC_ESC, MOD_BIT(KC_LCTL), KC_GRV, MODS_NULL)
+                HANDLE_DOWN_BOTH(KC_BSPC, MOD_BIT(KC_LSFT), KC_BSLS, MOD_BIT(KC_LSFT))
+                HANDLE_DOWN_BOTH(KC_BSPC, MOD_BIT(KC_LCTL), KC_BSLS, MODS_NULL)
+                HANDLE_DOWN_BOTH(KC_E, MOD_BIT(KC_LCTL), KC_END, MODS_NULL)
+                HANDLE_DOWN_BOTH(KC_QUOT, MOD_BIT(KC_LCTL), KC_BSPC, MODS_NULL)
+                HANDLE_DOWN_BOTH(KC_SCLN, MOD_BIT(KC_LCTL), KC_RETN, MODS_NULL)
+                HANDLE_DOWN_BOTH(KC_B, MOD_BIT(KC_LCTL), KC_BSPC, MODS_NULL)
+                HANDLE_DOWN_BOTH(KC_ESC, MOD_BIT(KC_LALT), KC_GRV, MOD_BIT(KC_LALT))
+                HANDLE_DOWN_BOTH(KC_U, MOD_BIT(KC_LALT), KC_PGUP, MODS_NULL)
+                HANDLE_DOWN_BOTH(KC_D, MOD_BIT(KC_LALT), KC_PGDN, MODS_NULL)
+                HANDLE_DOWN_MAC(KC_R, MOD_BIT(KC_LCTL), KC_R, MOD_BIT(KC_LGUI)) // reload browser
+                else {
+                    register_mods(held_mods);
+                    register_code(keycode);
+                }
+            }
+            return false;
         } else {
-            unregister_code(KC_DOWN);
+            if (!record->event.pressed) {
+                if (keycode == MO(1)) {unregister_code(MO(1));layer_move(curr_layer);}
+                HANDLE_UP_BOTH(KC_H, MOD_BIT(KC_LCTL), KC_LEFT, MODS_NULL)
+                HANDLE_UP_BOTH(KC_J, MOD_BIT(KC_LCTL), KC_DOWN, MODS_NULL)
+                HANDLE_UP_BOTH(KC_K, MOD_BIT(KC_LCTL), KC_UP, MODS_NULL)
+                HANDLE_UP_BOTH(KC_L, MOD_BIT(KC_LCTL), KC_RIGHT, MODS_NULL)
+                HANDLE_UP_BOTH(KC_ESC, MOD_BIT(KC_LSFT), KC_GRV, MOD_BIT(KC_LSFT))
+                HANDLE_UP_BOTH(KC_ESC, MOD_BIT(KC_LCTL), KC_GRV, MODS_NULL)
+                HANDLE_UP_BOTH(KC_BSPC, MOD_BIT(KC_LSFT), KC_BSLS, MOD_BIT(KC_LSFT))
+                HANDLE_UP_BOTH(KC_BSPC, MOD_BIT(KC_LCTL), KC_BSLS, MODS_NULL)
+                HANDLE_UP_BOTH(KC_E, MOD_BIT(KC_LCTL), KC_END, MODS_NULL)
+                HANDLE_UP_BOTH(KC_QUOT, MOD_BIT(KC_LCTL), KC_BSPC, MODS_NULL)
+                HANDLE_UP_BOTH(KC_SCLN, MOD_BIT(KC_LCTL), KC_RETN, MODS_NULL)
+                HANDLE_UP_BOTH(KC_B, MOD_BIT(KC_LCTL), KC_BSPC, MODS_NULL)
+                HANDLE_UP_BOTH(KC_ESC, MOD_BIT(KC_LALT), KC_GRV, MOD_BIT(KC_LALT))
+                HANDLE_UP_BOTH(KC_U, MOD_BIT(KC_LALT), KC_PGUP, MODS_NULL)
+                HANDLE_UP_BOTH(KC_D, MOD_BIT(KC_LALT), KC_PGDN, MODS_NULL)
+                HANDLE_UP_MAC(KC_R, MOD_BIT(KC_LCTL), KC_R, MOD_BIT(KC_LGUI))
+                else {
+                    unregister_code(keycode);
+                    // 这里之所以清除所有，是为了确保不会因为按键释放顺序导致错误，如果是用比如:
+                    // 如果只是 unregister_mods(held_mods) 的话，假设用户按下 CTRL+C，
+                    // 用户释放比较快，导致 CTRL 先释放了，再释放 C，这时候会导致 CTRL 无法正常释放，因为先释放的
+                    // CTRL 会改变 held_mods 的值。所以这里干脆直接把所有 mods 都 unregister。
+                    unregister_mods(MOD_MASK_CSAG);
+                    clear_mods();
+                    // unregister_mods(held_mods);
+                }
+                return false;
+            }
         }
-        return false;
-    } else if (keycode == KC_K && (get_mods() & MOD_MASK_CTRL)) {
-        if (record->event.pressed) {
-            uint8_t mods = get_mods();  // 保存当前修饰键状态
-            del_mods(MOD_MASK_CTRL);    // 临时清除Ctrl
-            register_code(KC_UP);
-            set_mods(mods);             // 恢复原修饰键状态
-        } else {
-            unregister_code(KC_UP);
-        }
-        return false;
-    } else if (keycode == KC_L && (get_mods() & MOD_MASK_CTRL)) {
-        if (record->event.pressed) {
-            uint8_t mods = get_mods();  // 保存当前修饰键状态
-            del_mods(MOD_MASK_CTRL);    // 临时清除Ctrl
-            register_code(KC_RIGHT);
-            set_mods(mods);             // 恢复原修饰键状态
-        } else {
-            unregister_code(KC_RIGHT);
-        }
-        return false;
     }
     return true;
 }
 
 #endif
-
