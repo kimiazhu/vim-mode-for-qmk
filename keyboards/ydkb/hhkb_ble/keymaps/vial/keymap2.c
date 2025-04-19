@@ -72,8 +72,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     static bool is_combination_active = false;
 
     // 检查是否是修饰键
-    if (IS_MODIFIER_KEYCODE(keycode)) {
-    // if (keycode >= KC_LCTL && keycode <= KC_RGUI) {
+    // if (IS_MODIFIER_KEYCODE(keycode)) {
+    if (keycode >= KC_LCTL && keycode <= KC_RGUI) {
         if (record->event.pressed) {
             held_mods |= MOD_BIT(keycode); // 记录按下的修饰键
         } else {
@@ -104,13 +104,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 held_mods = 0; // 清除 held_mods
             }
         }
-        return false; // 拦截修饰键，不发送给系统
+        return false;
     } else {
         if (record->event.pressed && held_mods) {
             is_combination_active = true; // 组合键被激活
             register_mods(held_mods); // 临时激活修饰键
             register_code(keycode);  // 发送普通键
-            return false; // 拦截原始按键事件
+            return false;
         } else {
             if (!record->event.pressed) {
                 unregister_code(keycode); // 释放普通键
@@ -124,7 +124,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
         }
     }
-    return true; // 允许其他按键正常处理
+    return true;
 }
 
 #endif
