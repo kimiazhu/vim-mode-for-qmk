@@ -81,6 +81,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 HANDLE_DOWN_BOTH(KC_J, MOD_BIT(KC_LCTL), KC_DOWN, MODS_NULL)
                 HANDLE_DOWN_BOTH(KC_K, MOD_BIT(KC_LCTL), KC_UP, MODS_NULL)
                 HANDLE_DOWN_BOTH(KC_L, MOD_BIT(KC_LCTL), KC_RIGHT, MODS_NULL)
+                HANDLE_DOWN_BOTH(KC_H, MOD_BIT(KC_LALT), KC_LEFT, MOD_BIT(KC_LCTL)) // 终端后退一个单词
+                HANDLE_DOWN_BOTH(KC_L, MOD_BIT(KC_LALT), KC_RIGHT, MOD_BIT(KC_LCTL)) // 终端前进一个单词
                 HANDLE_DOWN_BOTH(KC_ESC, MOD_BIT(KC_LSFT), KC_GRV, MOD_BIT(KC_LSFT))
                 HANDLE_DOWN_BOTH(KC_ESC, MOD_BIT(KC_LCTL), KC_GRV, MODS_NULL)
                 HANDLE_DOWN_BOTH(KC_BSPC, MOD_BIT(KC_LSFT), KC_BSLS, MOD_BIT(KC_LSFT))
@@ -93,6 +95,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 HANDLE_DOWN_BOTH(KC_U, MOD_BIT(KC_LALT), KC_PGUP, MODS_NULL)
                 HANDLE_DOWN_BOTH(KC_D, MOD_BIT(KC_LALT), KC_PGDN, MODS_NULL)
                 HANDLE_DOWN_MAC(KC_R, MOD_BIT(KC_LCTL), KC_R, MOD_BIT(KC_LGUI)) // reload browser
+                HANDLE_DOWN_WIN(KC_A, MOD_BIT(KC_LCTL), KC_HOME, MODS_NULL)
+                HANDLE_DOWN_WIN(KC_A, MOD_BIT(KC_LGUI), KC_A, MOD_BIT(KC_LCTL)) // win+A -> 全选
                 else {
                     register_mods(held_mods);
                     register_code(keycode);
@@ -106,6 +110,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 HANDLE_UP_BOTH(KC_J, MOD_BIT(KC_LCTL), KC_DOWN, MODS_NULL)
                 HANDLE_UP_BOTH(KC_K, MOD_BIT(KC_LCTL), KC_UP, MODS_NULL)
                 HANDLE_UP_BOTH(KC_L, MOD_BIT(KC_LCTL), KC_RIGHT, MODS_NULL)
+                HANDLE_UP_BOTH(KC_H, MOD_BIT(KC_LALT), KC_LEFT, MOD_BIT(KC_LCTL)) // 终端后退一个单词
+                HANDLE_UP_BOTH(KC_L, MOD_BIT(KC_LALT), KC_RIGHT, MOD_BIT(KC_LCTL)) // 终端前进一个单词
                 HANDLE_UP_BOTH(KC_ESC, MOD_BIT(KC_LSFT), KC_GRV, MOD_BIT(KC_LSFT))
                 HANDLE_UP_BOTH(KC_ESC, MOD_BIT(KC_LCTL), KC_GRV, MODS_NULL)
                 HANDLE_UP_BOTH(KC_BSPC, MOD_BIT(KC_LSFT), KC_BSLS, MOD_BIT(KC_LSFT))
@@ -118,6 +124,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 HANDLE_UP_BOTH(KC_U, MOD_BIT(KC_LALT), KC_PGUP, MODS_NULL)
                 HANDLE_UP_BOTH(KC_D, MOD_BIT(KC_LALT), KC_PGDN, MODS_NULL)
                 HANDLE_UP_MAC(KC_R, MOD_BIT(KC_LCTL), KC_R, MOD_BIT(KC_LGUI))
+                HANDLE_UP_WIN(KC_A, MOD_BIT(KC_LCTL), KC_HOME, MODS_NULL)
+                HANDLE_UP_WIN(KC_A, MOD_BIT(KC_LGUI), KC_A, MOD_BIT(KC_LCTL)) // win+A -> 全选
                 else {
                     unregister_code(keycode);
                     // 这里之所以清除所有，是为了确保不会因为按键释放顺序导致错误，如果是用比如:
