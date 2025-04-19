@@ -24,8 +24,6 @@ bool handle_mac(uint16_t keycode, keyrecord_t *record, uint16_t curr_key, uint8_
     }
     return true;
 }
-// status 用来保存按键的激活状态，保存32组
-// uint32_t status = 0;
 
 #define MOVE_to_LAYER(layer) \
     else if (keycode == KC_##layer && held_mods == MOD_BIT(KC_RALT)) { \
